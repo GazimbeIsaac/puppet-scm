@@ -1,32 +1,40 @@
-# Puppet module for Cloudera Service and Configuration Manager
+# Puppet module for Cloudera HUE
 
 ## Description
-Installs and configures the agent and server components of Cloudera SCM.
+Contains classes to install and configure the HUE server, as well as the associated hadoop plugins.  Can optionally configure CMON support in HUE.
 Note that, in order for this module to work, you will have to ensure that:
 * mysqld is installed and running on your scm server 
 * sun jre version 6 or greater is installed
 * the mysql jdbc connector is installed
-* your package manager is configured with a repository containing the
-  cloudera enterprise packages
-
-mysql server, installed, running, no root password
-mysql jdbc connector
-repositories 
+* your package manager is configured with a repository containing the cdh
+  and, optionally, cloudera enterprise packages
 
 ## Usage
 
-### cloudera-scm::agent
+### cloudera-hue::hadoop-plugins
 <pre>
-class { 'cloudera-scm::agent::params':
-  server_host => 'scm-host.fakedomain',
-  server_port => 7182,
+class { 'cloudera-hue::hadoop-plugins::params':
+  enterprise    => true,
+  hue_host      => "hue-server.fakedomain",
+  firehose_port => 9999,
 }
-include cloudera-scm::agent
+include cloudera-hue::hadoop-plugins
 </pre>
 
-### cloudera-scm::server
-Currently (as of 2011.08.25), only install support is implemented.
+### cloudera-hue::engine
 
 <pre>
-include cloudera-scm::server::install
+class { 'cloudera-hue::engine::params':
+  hue_host               => "hue-server.fakedomain",
+  hue_http_port          => 8088,
+  secret_key             => "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  namenode_host          => "cluster01.fakedomain",
+  namenode_port          => 8020,
+  namenode_thrift_port   => 10090,
+  jobtracker_host        => "cluster01.fakedomain",
+  jobtracker_thrift_port => 9290,
+  enterprise             => true,
+  firehose_port          => 9999,
+}
+include cloudera-hue::engine
 </pre>
